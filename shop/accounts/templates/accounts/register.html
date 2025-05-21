@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Регистрация</title>
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+	<header class="header login-header">
+		<a href="/">
+    <img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70">
+</a>
+	</header>
+
+	<main class="login-syte">
+		<form class="login-form" method="post">
+			{% csrf_token %}
+			<span class="login-text">Регистрация</span>
+			<input type="email" id="email" name="email" placeholder="email" required>
+			<input type="password" id="password" name="password" placeholder="пароль" required>
+			<input type="password" id="password2" name="password2" placeholder="повторите пароль" required>
+			<button type="submit">Зарегистрироваться</button>
+
+			{% if messages %}
+				{% for message in messages %}
+					<p style="color:red;">{{ message }}</p>
+				{% endfor %}
+			{% endif %}
+		</form>
+	</main>
+
+	<section class="login-syte text-with-a" style="margin-bottom: 50px;">
+		<span class="login-text-a">Уже есть аккаунт?</span>
+		<a href="{% url 'accounts:login' %}" class="text text-a login-text-a">Вход</a>
+	</section>
+</body>
+</html>

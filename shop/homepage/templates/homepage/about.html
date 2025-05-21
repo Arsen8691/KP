@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>О нас</title>
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+	<header class="header">
+		<div class="logo">
+			<a href="/">
+    <img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70">
+</a>
+		</div>
+		<nav class="menu-buttons">
+			<a href="/" class="button text">Главная</a>
+			<a href="/catalog/" class="button text">Каталог</a>
+			<a href="{% url 'cart:cart' %}" class="button text">Корзина ({{ cart_item_count }})</a>
+			<a href="/about/" class="button text">О нас</a>
+		</nav>
+		<div class="user-buttons">
+			{% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="button button-blue text-blue">Профиль</a>
+        <a href="{% url 'accounts:logout' %}" class="button text">Выйти</a>
+    {% else %}
+        <a href="{% url 'accounts:register' %}" class="button button-blue text-blue">Регистрация</a>
+        <a href="{% url 'accounts:login' %}" class="button text">Войти</a>
+    {% endif %}
+		</div>
+	</header>
+
+	<main>
+	<section class="text-block">
+		<h1>Добро пожаловать в наш интернет-магазин запчастей для советской мототехники!</h1>
+		<p>Мы — команда энтузиастов, объединённых любовью к классическим мотоциклам и мотороллерам времён СССР. Наша цель — сохранить легендарную технику на ходу, обеспечив вас качественными запчастями и комплектующими для таких моделей, как ИЖ, ЯВА, Минск, Урал, Восход, Тула и других.</p>
+		<p>Мы понимаем, насколько трудно найти надёжные детали для старой техники. Именно поэтому мы предлагаем:</p>
+		<ul>
+		  <li>широкий ассортимент оригинальных и аналоговых запчастей,</li>
+		  <li>проверенное качество и совместимость,</li>
+		  <li>удобную доставку по всей России и странам СНГ,</li>
+		  <li>консультации от опытных специалистов.</li>
+		</ul>
+		<p>Нам важно не просто продавать запчасти, а помогать вам восстанавливать, ремонтировать и сохранять мотоциклы с историей. За каждой моделью стоит своя эпоха — и мы гордимся тем, что помогаем ей жить дальше.</p>
+		<p>Спасибо, что выбираете нас!</p>
+	</section>
+	</main>
+
+	<footer class="footer">
+		<div class="footer-text">
+			© NMT Company, 2020-2025 <br>
+			Все права защищены
+		</div>
+		<div class="footer-buttons">
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo1.png' %}" alt="Логотип 1" width="40"></a>
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo2.png' %}" alt="Логотип 2" width="40"></a>
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo3.png' %}" alt="Логотип 3" width="40"></a>
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo4.png' %}" alt="Логотип 4" width="40"></a>
+		</div>
+	</footer>
+</body>
+</html>

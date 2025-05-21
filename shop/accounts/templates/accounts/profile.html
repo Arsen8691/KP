@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя — {{ user.username }}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .status-ready {
+            color: green;
+            font-weight: bold;
+        }
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+        a.details-link {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a.details-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="logo">
+        <a href="/"><img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70"></a>
+    </div>
+    <nav class="menu-buttons">
+        <a href="/" class="button text">Главная</a>
+        <a href="/catalog/" class="button text">Каталог</a>
+        <a href="{% url 'cart:cart' %}" class="button text">Корзина ({{ cart_item_count }})</a>
+        <a href="/about/" class="button text">О нас</a>
+    </nav>
+    <div class="user-buttons">
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}" class="button button-blue text-blue">Профиль</a>
+            <a href="{% url 'accounts:logout' %}" class="button text">Выйти</a>
+        {% else %}
+            <a href="{% url 'accounts:register' %}" class="button button-blue text-blue">Регистрация</a>
+            <a href="{% url 'accounts:login' %}" class="button text">Войти</a>
+        {% endif %}
+    </div>
+</header>
+
+<main>
+    <section class="order-info">
+        <div class="line">Профиль пользователя</div>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Всего заказов:</strong> {{ orders_count }}</p>
+        <p><strong>Потрачено всего:</strong> {{ total_spent }} ₽</p>
+    </section>
+
+    <section class="order-history">
+        <div class="line">История заказов</div>
+        {% if orders_with_totals %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Номер заказа</th>
+                        <th>Дата</th>
+                        <th>Сумма</th>
+                        <th>Статус</th>
+                        <th>Детали</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order, total in orders_with_totals %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ total }} ₽</td>
+                        <td>{{ order.get_status_display }}</td>
+                        <td><a href="{% url 'order:order_detail' order.id %}" class="details-link">Подробнее</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Пока у вас нет заказов.</p>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

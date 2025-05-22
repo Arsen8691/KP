@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+<header class="header">
+    <div class="logo">
+        <a href="/"><img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70"></a>
+    </div>
+    <nav class="menu-buttons">
+        <a href="/" class="button text">Главная</a>
+        <a href="/catalog/" class="button text">Каталог</a>
+        <a href="{% url 'cart:cart' %}" class="button text">Корзина ({{ cart_item_count }})</a>
+        <a href="/about/" class="button text">О нас</a>
+    </nav>
+    <div class="user-buttons">
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}" class="button button-blue text-blue">Профиль</a>
+            <a href="{% url 'accounts:logout' %}" class="button text">Выйти</a>
+        {% else %}
+            <a href="{% url 'accounts:register' %}" class="button button-blue text-blue">Регистрация</a>
+            <a href="{% url 'accounts:login' %}" class="button text">Войти</a>
+        {% endif %}
+    </div>
+</header>
+
+<main>
+    <div class="line">Корзина</div>
+
+    {% if cart_items %}
+        {% for item in cart_items %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" width="140">
+            </div>
+            <div class="product-info">
+
+                <div class="product-title">
+                <a href="{% url 'catalog:product_detail' item.product.id %}" class="text">{{ item.product.title }}</a>
+</div>
+                <div class="stars">
+                    {% for i in "12345"|slice:":5" %}
+                        {% if forloop.counter <= item.product.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="right-block">
+                <div class="price">{{ item.product.price }} ₽ × {{ item.quantity }}</div>
+                <form action="{% url 'cart:remove_from_cart' item.product.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="buy-button">Убрать</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="checkbox-group group-right">
+    <label class="checkbox-container label-void">Общая сумма: {{ total_price }} ₽</label>
+<div class="filter">
+    <a href="{% url 'order:checkout' %}" class="filter-button text">Перейти к оформлению</a>
+    </div>
+
+  </div>
+
+    {% else %}
+    <div class="checkbox-group group-right">
+    <label class="checkbox-container label-void">Ваша корзина пуста.</label>
+<div class="filter">
+    
+    </div>
+    {% endif %}
+</main>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Заказ оформлен — NMT Company</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <a href="/">
+    <img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70">
+</a>
+    </div>
+    <nav class="menu-buttons">
+      <a href="/" class="button text">Главная</a>
+      <a href="/catalog/" class="button text">Каталог</a>
+      <a href="{% url 'cart:cart' %}" class="button text">Корзина ({{ cart_item_count }})</a>
+      <a href="/about/" class="button text">О нас</a>
+    </nav>
+    <div class="user-buttons">
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="button button-blue text-blue">Профиль</a>
+        <a href="{% url 'accounts:logout' %}" class="button text">Выйти</a>
+    {% else %}
+        <a href="{% url 'accounts:register' %}" class="button button-blue text-blue">Регистрация</a>
+        <a href="{% url 'accounts:login' %}" class="button text">Войти</a>
+    {% endif %}
+    </div>
+  </header>
+
+  <main>
+    <section class="success-section">
+      <h1>Спасибо за ваш заказ!</h1>
+      <p>Ваш заказ №{{ order_number }} успешно оформлен.</p>
+      <p>Мы свяжемся с вами в ближайшее время для подтверждения.</p>
+      <a href="{% url 'index:index' %}" class="button button-blue">Вернуться на главную</a>
+    </section>
+  </main>
+
+
+</body>
+</html>

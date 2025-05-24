@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Каталог</title>
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+	<header class="header">
+		<div class="logo">
+			<a href="/">
+    <img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70">
+</a>
+		</div>
+		<nav class="menu-buttons">
+			<a href="/" class="button text">Главная</a>
+			<a href="/catalog/" class="button text">Каталог</a>
+			<a href="{% url 'cart:cart' %}" class="button text">Корзина ({{ cart_item_count }})</a>
+			<a href="/about/" class="button text">О нас</a>
+		</nav>
+		<div class="user-buttons">
+			{% if user.is_authenticated %}
+        <a href="{% url 'accounts:profile' %}" class="button button-blue text-blue">Профиль</a>
+        <a href="{% url 'accounts:logout' %}" class="button text">Выйти</a>
+    {% else %}
+        <a href="{% url 'accounts:register' %}" class="button button-blue text-blue">Регистрация</a>
+        <a href="{% url 'accounts:login' %}" class="button text">Войти</a>
+    {% endif %}
+		</div>
+	</header>
+
+	<main>
+		<div class="line">Каталог</div>
+
+		<form method="get" action="{% url 'catalog:catalog' %}">
+  <div class="checkbox-group">
+    <label class="checkbox-container label-void">Фильтры:</label>
+
+    {% for category in categories %}
+      <label class="checkbox-container">
+        <input type="checkbox" name="category" value="{{ category.id }}"
+            {% if category.id|stringformat:"s" in selected_categories %}checked{% endif %}>
+        {{ category.name }}
+      </label>
+    {% endfor %}
+
+
+    <div class="search-wrapper filter">
+  <input type="text" name="q" placeholder="Поиск товаров..." value="{{ search_query }}" id="search-box">
+</div>
+
+    <div class="filter">
+      <a href="#" class="text filter-button" onclick="this.closest('form').submit(); return false;">Применить</a>
+    </div>
+    <div class="filter">
+      <a href="{% url 'catalog:catalog' %}" class="filter-button text">Очистить</a>
+    </div>
+  </div>
+</form>
+
+<div class="checkbox-group">
+  <label class="checkbox-container label-void">Сортировка:</label>
+
+  <div class="filter">
+    <select id="sort-select" name="sort" class="filter-button text" onchange="applySort()">
+      <option value="">Без сортировки</option>
+      <option value="rating" {% if sort_option == 'rating' %}selected{% endif %}>Рейтингу</option>
+      <option value="price_asc" {% if sort_option == 'price_asc' %}selected{% endif %}>Цене (↑)</option>
+      <option value="price_desc" {% if sort_option == 'price_desc' %}selected{% endif %}>Цене (↓)</option>
+    </select>
+  </div>
+</div>
+
+<script>
+function applySort() {
+  const select = document.getElementById('sort-select');
+  const form = document.querySelector('form');
+  const urlParams = new URLSearchParams(new FormData(form));
+  urlParams.set('sort', select.value);
+  window.location.search = urlParams.toString();
+}
+</script>
+
+  {% for product in products %}
+            <div class="product-card" id="product-{{ product.id }}">
+    
+        <div class="product-image">
+            <img src="{{ product.image.url }}" alt="{{ product.title }}" width="140">
+        </div>
+        <div class="product-info">
+            <div class="product-title">
+                <a href="{% url 'catalog:product_detail' product.id %}" class="text">{{ product.title }}</a>
+</div>
+            <div class="stars">
+                {% for i in "12345"|slice:":5" %}
+                    {% if forloop.counter <= product.rating %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    <div class="right-block">
+        <div class="price">{{ product.price }} ₽</div>
+        <form action="{% url 'cart:add_to_cart' product.id %}?next={{ request.get_full_path }}#product-{{ product.id }}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="buy-button">В корзину</button>
+        </form>
+    </div>
+</div>
+        {% empty %}
+            <p>Товары не найдены.</p>
+        {% endfor %}
+  
+	</main>
+
+	<footer class="footer">
+		<div class="footer-text">
+			© NMT Company, 2020-2025 <br>
+			Все права защищены
+		</div>
+		<div class="footer-buttons">
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo1.png' %}" alt="Логотип 1" width="40"></a>
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo2.png' %}" alt="Логотип 2" width="40"></a>
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo3.png' %}" alt="Логотип 3" width="40"></a>
+			<a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank"><img src="{% static 'logo4.png' %}" alt="Логотип 4" width="40"></a>
+		</div>
+	</footer>
+</body>
+</html>

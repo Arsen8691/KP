@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ product.title }}</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <a href="/">
+      <img src="{% static 'logo.svg' %}" alt="Логотип NMT Company" width="205" height="70">
+    </a>
+  </div>
+  <nav class="menu-buttons">
+    <a href="/" class="button text">Главная</a>
+    <a href="/catalog/" class="button text">Каталог</a>
+    <a href="{% url 'cart:cart' %}" class="button text">Корзина ({{ cart_item_count }})</a>
+    <a href="/about/" class="button text">О нас</a>
+  </nav>
+  <div class="user-buttons">
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:profile' %}" class="button button-blue text-blue">Профиль</a>
+      <a href="{% url 'accounts:logout' %}" class="button text">Выйти</a>
+    {% else %}
+      <a href="{% url 'accounts:register' %}" class="button button-blue text-blue">Регистрация</a>
+      <a href="{% url 'accounts:login' %}" class="button text">Войти</a>
+    {% endif %}
+  </div>
+</header>
+
+<main>
+
+  <!-- Информация о товаре -->
+  <div class="product-card" id="product-{{ product.id }}">
+                <div class="product-image">
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}" width="140">
+                </div>
+                <div class="product-info">
+                    <div class="product-title">{{ product.title }}</div>
+                    <div class="stars">
+                        {% for i in "12345"|slice:":5" %}
+                            {% if forloop.counter <= product.rating %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="right-block">
+                    <div class="price">{{ product.price }} ₽</div>
+                    <form action="{% url 'cart:add_to_cart' product.id %}?next={{ request.get_full_path }}#product-{{ product.id }}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="buy-button">В корзину</button>
+</form>
+                </div>
+            </div>
+
+  <!-- Блок отзывов -->
+  <section class="reviews">
+    <div class="line">Отзывы</div>
+
+    {% if reviews %}
+  <table style="width: 100%; border-collapse: collapse;">
+    <tbody>
+      {% for review in reviews %}
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td style="width: 80px; color: #666; font-size: 0.9em; padding: 8px 10px; white-space: nowrap;">
+            {{ review.created_at|date:"d.m.Y" }}
+          </td>
+          <td style="width: 140px; color: #f5a623; font-size: 1.2em; padding: 8px 10px; text-align: center;">
+            {% for i in "12345"|slice:":5" %}
+              {% if forloop.counter <= review.rating %}
+                ★
+              {% else %}
+                ☆
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td style="padding: 8px 10px; vertical-align: top;">
+            {{ review.text }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Пока нет отзывов.</p>
+{% endif %}
+
+    <!-- Оставить отзыв -->
+    {% if user.is_authenticated and user_has_purchased %}
+    <div class="line2">Оставить отзыв</div>
+    <form method="post" action="{% url 'catalog:add_review' product.id %}" class="review-form">
+        {% csrf_token %}
+        
+        <label for="id_rating">Оценка:</label>
+        <select name="rating" id="id_rating" required>
+          <option value="5">5 — Отлично</option>
+          <option value="4">4 — Хорошо</option>
+          <option value="3">3 — Нормально</option>
+          <option value="2">2 — Плохо</option>
+          <option value="1">1 — Ужасно</option>
+        </select>
+
+        <label for="id_text">Комментарий:</label>
+        <textarea name="text" id="id_text" rows="4" required></textarea>
+
+        <button type="submit" class="buy-button">Отправить отзыв</button>
+      </form>
+    {% elif user.is_authenticated %}
+      <p>Вы можете оставить отзыв только после покупки этого товара.</p>
+    {% else %}
+      <p>Войдите, чтобы оставить отзыв.</p>
+    {% endif %}
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-text">
+    © NMT Company, 2020–2025 <br> Все права защищены
+  </div>
+  <div class="footer-buttons">
+    <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank">
+      <img src="{% static 'logo1.png' %}" alt="Логотип 1" width="40">
+    </a>
+    <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank">
+      <img src="{% static 'logo2.png' %}" alt="Логотип 2" width="40">
+    </a>
+    <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank">
+      <img src="{% static 'logo3.png' %}" alt="Логотип 3" width="40">
+    </a>
+    <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" class="button img" target="_blank">
+      <img src="{% static 'logo4.png' %}" alt="Логотип 4" width="40">
+    </a>
+  </div>
+</footer>
+</body>
+</html>
